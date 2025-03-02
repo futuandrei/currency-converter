@@ -1,3 +1,16 @@
+/// <reference types="vite/client" />
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+// import "vite/client";
+// const API_KEY = import.meta.env.VITE_API_KEY;
+
+console.log("VITE_API_KEY:", import.meta.env.VITE_API_KEY);
+
+// if (!API_KEY) {
+//   throw new Error("❌ API key is missing! Make sure to set it in the .env file.");
+// }
+
+
 interface Data {
   conversion_rates: Record<string, number>;
 }
@@ -22,60 +35,27 @@ class FetchWrapper {
       throw error;
     }
   }
-
-  private async _send(method: string, endpoint: string, body: any): Promise<any> {
-    try {
-      const response = await fetch(this.baseURL + endpoint, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    } catch (error) {
-      console.error(`Error with ${method} request:`, error);
-      throw error;
-    }
-  }
-
-  put(endpoint: string, body: any): Promise<any> {
-    return this._send("PUT", endpoint, body);
-  }
-
-  post(endpoint: string, body: any): Promise<any> {
-    return this._send("POST", endpoint, body);
-  }
-
-  delete(endpoint: string, body: any): Promise<any> {
-    return this._send("DELETE", endpoint, body);
-  }
 }
 
-// Selecting elements safely
-
+// ✅ **Select elements from `index.html`**
 const baseCurrencyElement = document.getElementById("base-currency") as HTMLSelectElement | null;
 const targetCurrencyElement = document.getElementById("target-currency") as HTMLSelectElement | null;
 const conversionResult = document.getElementById("conversion-result") as HTMLParagraphElement | null;
-const amountElement = document.getElementById("amount") as HTMLInputElement | null;
+const baseAmountElement = document.getElementById("base-amount") as HTMLInputElement | null;
+const targetAmountElement = document.getElementById("target-amount") as HTMLInputElement | null;
 
+// ✅ **Ensure `targetAmountElement` is disabled**
+targetAmountElement?.setAttribute("disabled", "true");
 
-
-// Ensure targetAmountElement is disabled
-// if (targetAmountElement) {
-//   targetAmountElement.setAttribute("disabled", "true");
-// }
-
-// Store conversion rates globally
+// ✅ **Store conversion rates globally**
 let conversionRates: Record<string, number> = {};
 
+// ✅ **Initialize API Wrapper**
 const api = new FetchWrapper(
-  "https://v6.exchangerate-api.com/v6/4ca6d8a5a7c1845e205b54ef/latest/"
+  `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/`
 );
 
+// ✅ **Fetch Exchange Rates for the Selected Base Currency**
 async function fetchExchangeRates(baseCurrency: string) {
   console.log(`fetchExchangeRates called with baseCurrency: ${baseCurrency}`);
 
@@ -102,59 +82,57 @@ async function fetchExchangeRates(baseCurrency: string) {
   }
 }
 
+// ✅ **Update Conversion Result in UI**
 function updateConversionResult() {
   if (!conversionRates || Object.keys(conversionRates).length === 0) {
     console.warn("Skipping update: Conversion rates not available yet.");
     return;
   }
 
-  const baseCurrencyElement = document.getElementById("base-currency") as HTMLSelectElement;
-  const targetCurrencyElement = document.getElementById("target-currency") as HTMLSelectElement;
-  const resultElement = document.getElementById("conversion-result") as HTMLParagraphElement;
+  if (baseCurrencyElement && targetCurrencyElement && conversionResult) {
+    const base = baseCurrencyElement.value;
+    const target = targetCurrencyElement.value;
 
-  if (!baseCurrencyElement || !targetCurrencyElement || !resultElement) {
-    console.error("One or more elements are missing in the DOM.");
-    return;
-  }
+    if (conversionRates[target]) {
+      const rate = conversionRates[target];
+      conversionResult.textContent = `1 ${base} = ${rate.toFixed(4)} ${target}`;
 
-  const base = baseCurrencyElement.value;
-  const target = targetCurrencyElement.value;
-
-  if (conversionRates[target]) {
-    const rate = conversionRates[target];
-    resultElement.textContent = `1 ${base} = ${rate.toFixed(4)} ${target}`;
-  } else {
-    resultElement.textContent = `Exchange rate for ${target} not found.`;
+      // Convert amount if input is filled
+      performConversion();
+    } else {
+      conversionResult.textContent = `Exchange rate for ${target} not found.`;
+    }
   }
 }
 
+// ✅ **Perform Currency Conversion**
 function performConversion() {
   if (!conversionRates || Object.keys(conversionRates).length === 0) {
     console.warn("Conversion rates not available yet.");
     return;
   }
 
-  if (baseCurrencyElement && targetCurrencyElement && amountElement && conversionResult) {
-    const baseCurrency = baseCurrencyElement.value;
+  if (baseCurrencyElement && targetCurrencyElement && baseAmountElement && targetAmountElement) {
+    // const baseCurrency = baseCurrencyElement.value;
     const targetCurrency = targetCurrencyElement.value;
-    const amount = parseFloat(amountElement.value);
+    const amount = parseFloat(baseAmountElement.value);
 
-    if (isNaN(amount)) {
-      conversionResult.textContent = "Please enter a valid amount.";
+    if (isNaN(amount) || amount <= 0) {
+      targetAmountElement.value = "";
       return;
     }
 
     if (conversionRates[targetCurrency]) {
       const rate = conversionRates[targetCurrency];
       const convertedAmount = amount * rate;
-      conversionResult.textContent = `${amount} ${baseCurrency} = ${convertedAmount.toFixed(4)} ${targetCurrency}`;
+      targetAmountElement.value = convertedAmount.toFixed(4);
     } else {
-      conversionResult.textContent = `Exchange rate for ${targetCurrency} not found.`;
+      targetAmountElement.value = "";
     }
   }
 }
 
-// Attach event listeners safely
+// ✅ **Attach Event Listeners**
 baseCurrencyElement?.addEventListener("change", () => {
   if (baseCurrencyElement) {
     fetchExchangeRates(baseCurrencyElement.value);
@@ -162,11 +140,11 @@ baseCurrencyElement?.addEventListener("change", () => {
 });
 
 targetCurrencyElement?.addEventListener("change", updateConversionResult);
-amountElement?.addEventListener("input", performConversion);
+baseAmountElement?.addEventListener("input", performConversion);
+
+// ✅ **Fetch Exchange Rates on Page Load**
 document.addEventListener("DOMContentLoaded", () => {
-  const baseCurrencyElement = document.getElementById("base-currency") as HTMLSelectElement;
   if (baseCurrencyElement) {
     fetchExchangeRates(baseCurrencyElement.value);
   }
 });
-// fetchExchangeRates("USD");

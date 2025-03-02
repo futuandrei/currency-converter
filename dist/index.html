@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Currency Exchange Rates</title>
-  <link rel="stylesheet" crossorigin href="/assets/index-bKuwAAKD.css">
+  <script type="module" crossorigin src="/currency-converter/assets/index-4PhbgqH_.js"></script>
+  <link rel="stylesheet" crossorigin href="/currency-converter/assets/index-BxaJVqzS.css">
 </head>
 <body>
     <nav id="navbar">
@@ -27,6 +28,7 @@
                     <option value="INR">Indian Rupee (₹)</option>
                     <option value="NPR">Nepalese Rupee (₹)</option>
                 </select>
+                <input type="number" id="base-amount" placeholder="Enter amount">
             </div>
             <div>
                 <label for="target-currency">Target currency:</label>
@@ -37,12 +39,13 @@
                     <option value="INR">Indian Rupee (₹)</option>
                     <option value="NPR">Nepalese Rupee (₹)</option>
                 </select>
+                <input type="number" id="target-amount" placeholder="Enter amount" disabled>
             </div>
         </div>
-        <div class="result-grid">
-            <p> 1 </p>
-            <p> = </p>
-            <p id="conversion-result">1</p>
+        <div class="result">
+            <!-- <p> 1 </p>
+            <p> = </p> -->
+            <p id="conversion-result"></p>
         </div>
 
     </div>
@@ -52,5 +55,4 @@
         <a href="#" target="_blank">Contact us</a>
     </footer>
 </body>
-<script type="text/javascript" src="src/main.ts"></script>
 </html>

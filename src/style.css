@@ -19,6 +19,7 @@
   --accent-3: #8dd8cf;
   --accent-4: #92cfc7;
   --accent-5: #d7f2ef;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 body {
@@ -265,9 +266,9 @@ select {
     place-items: center;
 }
 
-.result-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    place-items: center;
+.result {
+    /* display: grid;
+    grid-template-columns: repeat(3, 1fr); */
+    place-items: left;
     font-size: 30px;
 }
