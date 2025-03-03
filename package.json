@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
+    "preview": "vite preview --port 5000",
     "start": "vite preview"
   },
   "devDependencies": {
