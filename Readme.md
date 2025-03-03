@@ -1,5 +1,7 @@
 # Exchange rate app
 
+This is just a tiny change for testing...
+
 ## Project structure
 
 ```
