@@ -1,8 +1,5 @@
-/// <reference types="vite/client" />
+// <reference types="vite/client" />
 const API_KEY = import.meta.env.VITE_API_KEY;
-// import "vite/client";
-// const API_KEY = import.meta.env.VITE_API_KEY;
-console.log("VITE_API_KEY:", import.meta.env.VITE_API_KEY);
 class FetchWrapper {
     baseURL;
     constructor(baseURL) {
@@ -37,32 +34,32 @@ let conversionRates = {};
 const api = new FetchWrapper(`https://v6.exchangerate-api.com/v6/${API_KEY}/latest/`);
 // ✅ **Fetch Exchange Rates for the Selected Base Currency**
 async function fetchExchangeRates(baseCurrency) {
-    console.log(`fetchExchangeRates called with baseCurrency: ${baseCurrency}`);
+    // console.log(`fetchExchangeRates called with baseCurrency: ${baseCurrency}`);
     try {
         const response = await fetch(api.baseURL + baseCurrency);
-        console.log("Fetch request sent:", api.baseURL + baseCurrency);
+        // console.log("Fetch request sent:", api.baseURL + baseCurrency);
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        console.log("API response:", data);
+        // console.log("API response:", data);
         if (data.conversion_rates) {
             conversionRates = data.conversion_rates;
-            console.log("Updated exchange rates:", conversionRates);
+            // console.log("Updated exchange rates:", conversionRates);
             updateConversionResult();
         }
         else {
-            console.error("❌ API response does not contain conversion rates:", data);
+            // console.error("❌ API response does not contain conversion rates:", data);
         }
     }
     catch (error) {
-        console.error("❌ Error fetching exchange rates:", error);
+        // console.error("❌ Error fetching exchange rates:", error);
     }
 }
 // ✅ **Update Conversion Result in UI**
 function updateConversionResult() {
     if (!conversionRates || Object.keys(conversionRates).length === 0) {
-        console.warn("Skipping update: Conversion rates not available yet.");
+        // console.warn("Skipping update: Conversion rates not available yet.");
         return;
     }
     if (baseCurrencyElement && targetCurrencyElement && conversionResult) {
