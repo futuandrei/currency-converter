@@ -1,6 +1,6 @@
 # Exchange rate app
 
-## Project sturcture
+## Project structure
 
 ```
 📂 project-root/
